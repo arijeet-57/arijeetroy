@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* ---------- Custom fonts (drop font files into /public/fonts/...) ---------- */
+@font-face {
+  font-family: "Lingkawi";
+  src: url("/fonts/lingkawi/lingkawi.woff2") format("woff2"),
+    url("/fonts/lingkawi/lingkawi.woff") format("woff"),
+    url("/fonts/lingkawi/lingkawi.ttf") format("truetype"),
+    url("/fonts/lingkawi/lingkawi.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DX Lactos";
+  src: url("/fonts/dx-lactos/dx-lactos.woff2") format("woff2"),
+    url("/fonts/dx-lactos/dx-lactos.woff") format("woff"),
+    url("/fonts/dx-lactos/dx-lactos.ttf") format("truetype"),
+    url("/fonts/dx-lactos/dx-lactos.otf") format("opentype");
+  font-display: swap;
+}
+
+:root {
+  --background: #1c1c1c;
+  --foreground: #eceae6;
+  --crimson: #8e1220;
+  --crimson-bright: #e02540;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-crimson: var(--crimson);
+  --color-crimson-bright: var(--crimson-bright);
+  --font-lingkawi: "Lingkawi", "Georgia", serif;
+  --font-lactos: "DX Lactos", var(--font-geist-mono), monospace;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--crimson);
+  color: #fff;
+}
+
+/* ---------- Gritty film texture overlay ---------- */
+/* fixed wrapper so one grain layer covers the whole site, above everything */
+.grain-fixed {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* contrast is baked into the SVG (feComponentTransfer) — a live CSS filter()
+   on a full-screen blend-mode layer forces a repaint every frame */
+.grain {
+  position: absolute;
+  inset: -50%;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-0.7'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+  animation: grain-jitter 0.7s steps(1) infinite;
+  will-change: transform;
+}
+
+@keyframes grain-jitter {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-4%, -6%);
+  }
+  25% {
+    transform: translate(3%, -3%);
+  }
+  40% {
+    transform: translate(-3%, 4%);
+  }
+  55% {
+    transform: translate(5%, 2%);
+  }
+  70% {
+    transform: translate(-5%, 6%);
+  }
+  85% {
+    transform: translate(2%, -5%);
+  }
+}
