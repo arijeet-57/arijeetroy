@@ -9,20 +9,19 @@ gsap.registerPlugin(useGSAP);
 const BALL_SIZE = 80;
 const TAPS_NEEDED = 5; // the 5th tap launches it
 
-export default function Preloader({ onComplete }: { onComplete: () => void }) {
+export default function Preloader({
+  onReveal,
+  onComplete,
+}: {
+  onReveal: () => void;
+  onComplete: () => void;
+}) {
   const container = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-
-      // ricochet anchors — offsets from the centred ball to just inside each
-      // wall, so it cracks off the edges like a pinball
-      const pad = BALL_SIZE / 2 + 16;
-      const rightX = w / 2 - pad;
-      const leftX = -(w / 2 - pad);
-      const topY = -(h / 2 - pad);
 
       // where the orb comes to rest on the ground (offset down from centre)
       const groundY = h / 2 - (BALL_SIZE / 2 + 70);
@@ -38,88 +37,6 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
       let ready = false;
       let launched = false;
       let activeBounce: gsap.core.Timeline | null = null;
-
-      // ---------------------------------------------------------------------
-      // THE REST OF THE SHOW — launch → ricochet → grow → blast → reveal.
-      // Untouched from before; just held paused until the final tap fires it.
-      // ---------------------------------------------------------------------
-      const rest = gsap.timeline({
-        paused: true,
-        defaults: { ease: "power2.inOut", transformOrigin: "50% 50%" },
-        onComplete,
-      });
-
-      rest
-        // whatever charge glow gathered on the ground releases as it launches;
-        // the floor pool spreads thin and dies as the orb leaves the ground
-        .to(".halo", { opacity: 0, duration: 0.2 }, 0)
-        .to(".floor-pool", { scaleX: 2.4, scaleY: 2, opacity: 0, duration: 0.5, ease: "power2.out" }, 0)
-        .to(".floor-reflection", { opacity: 0, duration: 0.4, ease: "power2.out" }, 0)
-        // LAUNCH — the orb is flung up toward the right wall, stretched along
-        // its arc
-        .to(".sphere", {
-          x: rightX,
-          y: topY * 0.45,
-          scaleX: 1.3,
-          scaleY: 0.74,
-          rotation: 220,
-          duration: 0.5,
-          ease: "power3.out",
-        })
-        // CRACK off the right wall — hard horizontal squash against it
-        .to(".sphere", { scaleX: 0.58, scaleY: 1.4, duration: 0.09, ease: "power2.out" })
-        // ZING down-left toward the left wall, spin whipping the other way
-        .to(".sphere", {
-          x: leftX,
-          y: h * 0.16,
-          rotation: 90,
-          scaleX: 1.28,
-          scaleY: 0.78,
-          duration: 0.5,
-          ease: "power1.inOut",
-        })
-        // CRACK off the left wall
-        .to(".sphere", { scaleX: 0.6, scaleY: 1.36, duration: 0.09, ease: "power2.out" })
-        // LOB up toward the top-centre, arcing over…
-        .to(".sphere", {
-          x: 120,
-          y: topY * 0.8,
-          rotation: 340,
-          scaleX: 1.18,
-          scaleY: 0.84,
-          duration: 0.44,
-          ease: "power2.out",
-        })
-        // …then PLUNGE dead-centre, accelerating into the impact
-        .to(".sphere", {
-          x: 0,
-          y: 0,
-          rotation: 360,
-          scaleX: 1.24,
-          scaleY: 0.76,
-          duration: 0.32,
-          ease: "power3.in",
-        })
-        // heavy splat on landing, then an elastic wobble to rest
-        .to(".sphere", { scaleX: 1.55, scaleY: 0.48, duration: 0.1, ease: "power2.out" })
-        .to(".sphere", { scaleX: 0.74, scaleY: 1.28, duration: 0.16, ease: "sine.inOut" })
-        .to(".sphere", { scaleX: 1.14, scaleY: 0.9, duration: 0.13, ease: "sine.inOut" })
-        .to(".sphere", { scaleX: 1, scaleY: 1, duration: 0.85, ease: "elastic.out(1.1, 0.3)" })
-        // the crimson halo slides to centre and blooms out of the settled orb
-        .to(".halo", { x: 0, y: 0, opacity: 1, scale: 1.15, duration: 0.7, ease: "power2.out" }, "<0.15")
-        // wind up…
-        .to(".sphere", { scale: 0.4, duration: 0.3, ease: "power3.in" }, "+=0.15")
-        .to(".halo", { scale: 0.72, opacity: 0.7, duration: 0.3, ease: "power3.in" }, "<")
-        // …BLAST — sphere engulfs the screen, halo flaring with it
-        .to(".sphere", { scale: blastScale, duration: 0.55, ease: "power4.in" })
-        .to(".halo", { scale: blastScale * 0.7, opacity: 1, duration: 0.55, ease: "power4.in" }, "<")
-        // crimson takes over at the moment of impact
-        .set(".crimson-flash", { opacity: 1 })
-        .to(".sphere", { opacity: 0, duration: 0.25, ease: "power1.out" })
-        .to(".halo", { opacity: 0, duration: 0.25, ease: "power1.out" }, "<")
-        // …then the screen settles back to normal
-        .to(".crimson-flash", { opacity: 0, duration: 0.9, ease: "power2.inOut" }, "+=0.3")
-        .to(container.current, { autoAlpha: 0, duration: 0.6, ease: "power1.out" }, "-=0.35");
 
       // ---------------------------------------------------------------------
       // helpers
@@ -173,23 +90,42 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
       // the height the final kick throws the orb to — clearly up in the air
       const kickY = -(h * 0.06);
 
-      // the final tap: hide the prompt and fire the rest of the show
+      // the final tap: the orb is flung up and, while still rising, ignites —
+      // swelling in one continuous move until it engulfs the whole page in
+      // red, which then clears to the matte-black scene beneath. No ricochet,
+      // no mid-air handoff, so there is never a stalled frame.
       const safety = gsap.delayedCall(22, launch).pause();
       function launch() {
         if (launched) return;
         launched = true;
         safety.kill();
         gsap.to(".tap-hint", { opacity: 0, duration: 0.25, ease: "power1.out" });
-        // cancel any bounce still in flight so the orb never touches back down
+        // cancel any bounce still in flight so nothing fights over the orb
         gsap.killTweensOf([".sphere", ".halo", ".floor-pool", ".floor-reflection"]);
-        // the built-up energy releases — the orb shoots up off the ground, then
-        // the rest of the show carries straight on from there, mid-air
+
         gsap
-          .timeline({ onComplete: () => rest.play(0) })
-          .to(".sphere", { y: kickY, scaleX: 0.82, scaleY: 1.26, duration: 0.34, ease: "power2.out" })
-          .to(".halo", { y: kickY, opacity: 0.6, scale: 0.85, duration: 0.34, ease: "power2.out" }, "<")
-          .to(".floor-pool", { opacity: 0.05, scaleX: 2.2, scaleY: 1.8, duration: 0.34, ease: "power2.out" }, "<")
-          .to(".floor-reflection", { opacity: 0, duration: 0.3, ease: "power2.out" }, "<");
+          .timeline({ defaults: { transformOrigin: "50% 50%" }, onComplete })
+          // the built-up energy releases — the orb shoots up off the ground
+          // and the floor light spreads thin and dies beneath it
+          .to(".sphere", { y: kickY, duration: 0.34, ease: "power2.out" }, 0)
+          .to(".halo", { y: kickY, duration: 0.34, ease: "power2.out" }, 0)
+          .to(".floor-pool", { opacity: 0, scaleX: 2.4, scaleY: 2, duration: 0.4, ease: "power2.out" }, 0)
+          .to(".floor-reflection", { opacity: 0, duration: 0.3, ease: "power2.out" }, 0)
+          // while the orb is STILL rising the swell begins — the growth is
+          // already accelerating when the jump crests, so the apex never reads
+          // as a stuck frame
+          .to(".sphere", { scale: blastScale, duration: 0.8, ease: "power2.in" }, 0.12)
+          .to(".halo", { scale: blastScale * 0.75, opacity: 1, duration: 0.8, ease: "power2.in" }, 0.12)
+          // red owns the whole page at the moment of engulfment; the opaque
+          // backdrop drops away so the hero is already breathing in underneath
+          .set(".crimson-flash", { opacity: 1 }, 0.92)
+          .set(container.current, { backgroundColor: "transparent", pointerEvents: "none" }, 0.92)
+          .call(onReveal, undefined, 0.92)
+          .to(".sphere", { opacity: 0, duration: 0.2, ease: "power1.out" }, 0.92)
+          .to(".halo", { opacity: 0, duration: 0.2, ease: "power1.out" }, 0.92)
+          // …then the red clears and the matte-black scene is left standing
+          .to(".crimson-flash", { opacity: 0, duration: 0.9, ease: "power2.inOut" }, 1.35)
+          .to(container.current, { autoAlpha: 0, duration: 0.5, ease: "power1.out" }, 1.6);
       }
 
       function onTap() {
@@ -199,7 +135,7 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
         safety.restart(true);
         if (taps >= TAPS_NEEDED) {
           // final tap: all that built-up energy releases — the orb is flung
-          // straight up into the air and the rest of the show takes over
+          // up and spreads red across the whole page
           launch();
         } else {
           // each tap bounces higher than the last — energy building toward launch

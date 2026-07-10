@@ -30,10 +30,6 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <SmoothScroll>{children}</SmoothScroll>
-        <div className="grain-fixed" aria-hidden>
-          <div className="grain" />
-          <div className="grain-dust" />
-        </div>
       </body>
     </html>
   );

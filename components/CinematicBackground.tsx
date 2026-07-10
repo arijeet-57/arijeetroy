@@ -173,7 +173,9 @@ export default function CinematicBackground({ active = true }: { active?: boolea
             height: "96vmax",
             opacity: 0.72,
             mixBlendMode: "screen",
-            willChange: "opacity",
+            // only pin a GPU layer while the scene is live — promoting all of
+            // these huge surfaces at page load competes with the preloader
+            willChange: active ? "opacity" : "auto",
             background:
               "radial-gradient(circle, rgba(224,37,64,0.24) 0%, rgba(180,26,44,0.15) 22%, rgba(120,16,30,0.08) 40%, rgba(60,8,14,0.03) 58%, transparent 74%)",
           }}
@@ -188,7 +190,7 @@ export default function CinematicBackground({ active = true }: { active?: boolea
             width: "52vmax",
             height: "52vmax",
             mixBlendMode: "screen",
-            willChange: "opacity",
+            willChange: active ? "opacity" : "auto",
             background:
               "radial-gradient(circle, rgba(255,150,110,0.18) 0%, rgba(224,37,64,0.11) 30%, rgba(160,22,40,0.05) 52%, transparent 72%)",
           }}
@@ -207,7 +209,7 @@ export default function CinematicBackground({ active = true }: { active?: boolea
           opacity: 0.45,
           filter: "blur(2px)",
           mixBlendMode: "screen",
-          willChange: "transform, opacity",
+          willChange: active ? "transform, opacity" : "auto",
           background:
             "linear-gradient(90deg, transparent 0%, rgba(224,37,64,0.28) 30%, rgba(255,170,140,0.5) 50%, rgba(224,37,64,0.28) 70%, transparent 100%)",
         }}
@@ -222,7 +224,7 @@ export default function CinematicBackground({ active = true }: { active?: boolea
           opacity: 0.28,
           filter: "blur(1.5px)",
           mixBlendMode: "screen",
-          willChange: "transform, opacity",
+          willChange: active ? "transform, opacity" : "auto",
           background:
             "linear-gradient(90deg, transparent, rgba(224,37,64,0.22) 40%, rgba(255,150,120,0.3) 50%, rgba(224,37,64,0.22) 60%, transparent)",
         }}
@@ -241,7 +243,7 @@ export default function CinematicBackground({ active = true }: { active?: boolea
             height: "130vh",
             opacity: 0.5,
             mixBlendMode: "screen",
-            willChange: "transform, opacity",
+            willChange: active ? "transform, opacity" : "auto",
             background:
               "linear-gradient(90deg, transparent 0%, rgba(224,37,64,0.09) 45%, rgba(224,37,64,0.11) 50%, rgba(224,37,64,0.09) 55%, transparent 100%)",
           }}
@@ -258,7 +260,7 @@ export default function CinematicBackground({ active = true }: { active?: boolea
             height: "130vh",
             opacity: 0.44,
             mixBlendMode: "screen",
-            willChange: "transform, opacity",
+            willChange: active ? "transform, opacity" : "auto",
             background:
               "linear-gradient(90deg, transparent 0%, rgba(255,110,70,0.07) 48%, rgba(255,110,70,0.09) 50%, rgba(255,110,70,0.07) 52%, transparent 100%)",
           }}
@@ -282,7 +284,8 @@ export default function CinematicBackground({ active = true }: { active?: boolea
             width: d.size,
             height: d.size,
             opacity: d.opacity,
-            willChange: "transform, opacity",
+            // no willChange here — 32 promoted layers for 1–3px specks is a
+            // layer explosion; GSAP's 3D transforms promote them on demand
             background: d.warm
               ? "rgba(255,178,140,0.9)"
               : "rgba(255,242,238,0.85)",

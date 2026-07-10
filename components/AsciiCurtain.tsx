@@ -130,8 +130,7 @@ export default function AsciiCurtain() {
       ))}
 
       {/* the panel the glyphs merge into — a crimson glow bleeding out of a
-          near-black field, echoing the reference orb. The global grain overlay
-          (z-9999) sits on top, giving it the same gritty texture */}
+          near-black field, echoing the reference orb */}
       <div
         className="ascii-merge absolute inset-0 opacity-0"
         style={{

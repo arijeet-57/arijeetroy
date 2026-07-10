@@ -28,41 +28,47 @@ export default function Hero({ active }: { active: boolean }) {
           { opacity: 1, scale: 1, duration: 2.2, ease: "power2.out" },
           0
         )
-        // scroll instruction comes in first
-        .fromTo(
-          ".scroll-cue",
-          { opacity: 0, y: 14 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        )
-        // then the headline slowly emerges, letter by letter
+        // the headline slowly emerges, letter by letter. The fog is ONE blur
+        // resolving on the whole line — per-letter filters would put 17
+        // separately-blurred surfaces on the GPU at once and chug the entrance
         .fromTo(
           ".name-char",
-          { opacity: 0, y: 46, filter: "blur(16px)" },
+          { opacity: 0, y: 46 },
           {
             opacity: 1,
             y: 0,
-            filter: "blur(0px)",
             duration: 1.7,
             stagger: 0.07,
             ease: "power3.out",
-            // leave no per-letter filters behind — they'd cost a repaint
-            // per span on every scrubbed frame later
+          },
+          0.35
+        )
+        .fromTo(
+          ".hero-title",
+          { filter: "blur(16px)" },
+          {
+            filter: "blur(0px)",
+            duration: 1.9,
+            ease: "power2.out",
+            // leave no filter behind — it'd cost a repaint of the whole
+            // headline on every scrubbed frame later
             clearProps: "filter",
           },
-          "-=0.5"
+          0.35
         )
-        // and the smaller line drifts in beneath it
+        // the smaller line drifts in beneath it
         .fromTo(
           ".subline",
-          { opacity: 0, y: 18, filter: "blur(8px)" },
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 1.4,
-            ease: "power2.out",
-          },
-          "-=1.2"
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: 1.4, ease: "power2.out" },
+          "-=1.1"
+        )
+        // the scroll instruction arrives last — once there's something to read
+        .fromTo(
+          ".scroll-cue",
+          { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
+          "-=0.8"
         );
 
       // gently pulsing scroll line, forever
@@ -105,7 +111,9 @@ export default function Hero({ active }: { active: boolean }) {
         .to(".scroll-cue", { opacity: 0, duration: 0.15 }, 0)
         // the crimson glow dissolves along with the text
         .to(".hero-glow", { opacity: 0, scale: 1.1, duration: 0.5, ease: "power1.in" }, 0.05)
-        // letters fade away in place, left to right — no movement at all
+        // letters fade away in place, left to right — no movement, and no
+        // scrubbed blur: re-filtering the huge headline every scrolled frame
+        // is what made the dissolve stutter
         .to(
           ".name-char",
           {
@@ -116,16 +124,10 @@ export default function Hero({ active }: { active: boolean }) {
           },
           0.05
         )
-        // a soft stationary blur over the whole headline as it thins out
-        .to(
-          ".hero-title",
-          { filter: "blur(14px)", duration: 0.6, ease: "power1.in" },
-          0.1
-        )
         // the subline follows, fading in place
         .to(
           ".subline",
-          { opacity: 0, filter: "blur(10px)", duration: 0.4, ease: "power1.in" },
+          { opacity: 0, duration: 0.4, ease: "power1.in" },
           0.25
         );
 
@@ -159,9 +161,10 @@ export default function Hero({ active }: { active: boolean }) {
       <div
         className="hero-glow pointer-events-none absolute left-1/2 top-1/2 -z-[1] h-[125vmin] w-[125vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0"
         style={{
+          // soft entirely from the gradient falloff — a blur filter here would
+          // re-rasterise a 125vmin surface on every frame of the scale tween
           background:
             "radial-gradient(circle, rgba(224,37,64,0.3) 0%, rgba(142,18,32,0.18) 28%, rgba(142,18,32,0.06) 48%, transparent 66%)",
-          filter: "blur(24px)",
         }}
       />
 
