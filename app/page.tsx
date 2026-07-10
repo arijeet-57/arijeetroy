@@ -4,7 +4,8 @@ import { useState } from "react";
 import Preloader from "@/components/Preloader";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
-import ChameleonBackground from "@/components/ChameleonBackground";
+import CinematicBackground from "@/components/CinematicBackground";
+import AsciiCurtain from "@/components/AsciiCurtain";
 
 const SECTION_IDS = ["work", "about", "contact"];
 
@@ -15,10 +16,14 @@ export default function Home() {
     <>
       {!introDone && <Preloader onComplete={() => setIntroDone(true)} />}
 
-      <ChameleonBackground />
+      <CinematicBackground active={introDone} />
       <Navbar active={introDone} />
 
       <Hero active={introDone} />
+
+      {/* ascii glyphs erupt from the corner and merge to matte black as the
+          hero text dissolves on scroll */}
+      <AsciiCurtain />
 
       {/* invisible scroll anchors — real content lands here, the chameleon
           background owns the visuals for now */}

@@ -12,6 +12,7 @@ const SUBLINE = "where design, code and motion collide";
 
 export default function Hero({ active }: { active: boolean }) {
   const container = useRef<HTMLElement>(null);
+  const veil = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -20,6 +21,13 @@ export default function Hero({ active }: { active: boolean }) {
       const tl = gsap.timeline({ delay: 0.15 });
 
       tl
+        // the crimson glow breathes in behind everything first
+        .fromTo(
+          ".hero-glow",
+          { opacity: 0, scale: 0.82 },
+          { opacity: 1, scale: 1, duration: 2.2, ease: "power2.out" },
+          0
+        )
         // scroll instruction comes in first
         .fromTo(
           ".scroll-cue",
@@ -83,8 +91,20 @@ export default function Hero({ active }: { active: boolean }) {
       });
 
       scrollTl
+        // the visible background sinks into a darker shade as the text goes,
+        // then eases back out near the end so the CinematicBackground takes
+        // the handoff cleanly
+        .fromTo(
+          veil.current,
+          { opacity: 0 },
+          { opacity: 0.55, duration: 0.5, ease: "power1.in" },
+          0
+        )
+        .to(veil.current, { opacity: 0, duration: 0.4, ease: "power1.out" }, 0.65)
         // scroll cue vanishes immediately
         .to(".scroll-cue", { opacity: 0, duration: 0.15 }, 0)
+        // the crimson glow dissolves along with the text
+        .to(".hero-glow", { opacity: 0, scale: 1.1, duration: 0.5, ease: "power1.in" }, 0.05)
         // letters fade away in place, left to right — no movement at all
         .to(
           ".name-char",
@@ -118,11 +138,33 @@ export default function Hero({ active }: { active: boolean }) {
   const words = HEADLINE.split(" ");
 
   return (
-    <section
-      id="home"
-      ref={container}
-      className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
-    >
+    <>
+      {/* page-level darkening layer — fixed, and behind every bit of content
+          (-z-5, above the CinematicBackground at -z-10). It can only ever
+          darken the background, never the text. */}
+      <div
+        ref={veil}
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-[5] bg-black"
+        style={{ opacity: 0 }}
+      />
+
+      <section
+        id="home"
+        ref={container}
+        className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
+      >
+      {/* crimson glow behind the headline — the reference's red bleed on a dark
+          field. Sits above the CinematicBackground/veil but behind the text. */}
+      <div
+        className="hero-glow pointer-events-none absolute left-1/2 top-1/2 -z-[1] h-[125vmin] w-[125vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(224,37,64,0.3) 0%, rgba(142,18,32,0.18) 28%, rgba(142,18,32,0.06) 48%, transparent 66%)",
+          filter: "blur(24px)",
+        }}
+      />
+
       <h1
         aria-label={HEADLINE}
         className="hero-title relative z-10 select-none text-center text-[clamp(2.5rem,9vw,8rem)] leading-none tracking-tight text-foreground"
@@ -156,6 +198,7 @@ export default function Hero({ active }: { active: boolean }) {
         </span>
         <span className="scroll-cue-line block h-10 w-px bg-foreground/40" />
       </div>
-    </section>
+      </section>
+    </>
   );
 }

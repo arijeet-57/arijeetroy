@@ -32,6 +32,7 @@ export default function RootLayout({
         <SmoothScroll>{children}</SmoothScroll>
         <div className="grain-fixed" aria-hidden>
           <div className="grain" />
+          <div className="grain-dust" />
         </div>
       </body>
     </html>
