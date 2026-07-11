@@ -1,104 +1,86 @@
 "use client";
 
-import { useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import { useEffect, useState } from "react";
 import { useLenis } from "lenis/react";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
-
 const LINKS = [
-  { id: "home", label: "home" },
-  { id: "work", label: "work" },
-  { id: "about", label: "about" },
-  { id: "contact", label: "contact" },
+  { id: "home", label: "Home" },
+  { id: "work", label: "Work" },
+  { id: "about", label: "About" },
+  { id: "contact", label: "Contact" },
 ];
 
-export default function Navbar({ active }: { active: boolean }) {
-  const nav = useRef<HTMLElement>(null);
-  const [current, setCurrent] = useState("home");
-
-  // Lenis instance for smooth scrollTo (ScrollTrigger sync lives in SmoothScroll)
+/**
+ * Floating right-edge navigator — neo-brutalist. Sharp-cornered blocks, thick
+ * high-contrast borders, hard offset shadows (no blur), loud uppercase labels.
+ * The active section is a solid crimson block; every button presses down into
+ * its shadow on hover. Palette stays in the site's crimson/black world.
+ */
+export default function Navbar() {
+  const [active, setActive] = useState("home");
   const lenis = useLenis();
 
-  useGSAP(
-    () => {
-      if (!active) return;
+  // track which section owns the middle of the viewport
+  useEffect(() => {
+    const sections = LINKS.map((l) => document.getElementById(l.id)).filter(
+      Boolean
+    ) as HTMLElement[];
+    if (!sections.length) return;
 
-      gsap.fromTo(
-        nav.current,
-        { y: 90, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: "back.out(1.6)", delay: 0.8 }
-      );
-
-      LINKS.forEach(({ id }) => {
-        // resolve from the document — selector strings inside a scoped
-        // useGSAP context would be looked up inside the nav element only
-        const el = document.getElementById(id);
-        if (!el) return;
-        ScrollTrigger.create({
-          trigger: el,
-          start: "top center",
-          end: "bottom center",
-          onToggle: (self) => self.isActive && setCurrent(id),
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
         });
-      });
-    },
-    { dependencies: [active], scope: nav }
-  );
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, []);
 
-  const handleEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    gsap.to(e.currentTarget, { y: -3, duration: 0.35, ease: "power2.out" });
-    gsap.to(e.currentTarget.querySelector(".nav-dot"), {
-      scale: 1,
-      opacity: 1,
-      duration: 0.35,
-      ease: "back.out(3)",
-    });
+  const go = (id: string) => {
+    if (lenis) lenis.scrollTo(`#${id}`, { duration: 1.4 });
+    else document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    gsap.to(e.currentTarget, { y: 0, duration: 0.45, ease: "power2.out" });
-    gsap.to(e.currentTarget.querySelector(".nav-dot"), {
-      scale: 0,
-      opacity: 0,
-      duration: 0.25,
-      ease: "power2.in",
-    });
-  };
-
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
-    const el = e.currentTarget;
-    gsap
-      .timeline()
-      .to(el, { scale: 0.82, duration: 0.1, ease: "power2.in" })
-      .to(el, { scale: 1, duration: 0.6, ease: "elastic.out(1.2, 0.4)" });
-    lenis?.scrollTo(`#${id}`, { duration: 1.4 });
-  };
+  // shared brutalist button shape; hover presses the block into its shadow
+  const base =
+    "flex w-full items-center justify-between gap-4 border-[2.5px] px-4 py-2.5 text-[0.62rem] font-bold uppercase tracking-[0.3em] transition-all duration-150 hover:translate-x-[3px] hover:translate-y-[3px]";
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center">
-      <nav
-        ref={nav}
-        className="pointer-events-auto flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 opacity-0 shadow-[0_8px_32px_rgba(0,0,0,0.45)] backdrop-blur-md"
-        style={{ fontFamily: "var(--font-lactos)" }}
-      >
-        {LINKS.map(({ id, label }) => (
-          <button
-            key={id}
-            onMouseEnter={handleEnter}
-            onMouseLeave={handleLeave}
-            onClick={(e) => handleClick(e, id)}
-            className={`relative cursor-pointer px-4 py-2.5 text-[0.62rem] uppercase tracking-[0.25em] transition-colors duration-500 ${
-              current === id ? "text-crimson-bright" : "text-foreground/55 hover:text-foreground/90"
-            }`}
-          >
-            {label}
-            <span className="nav-dot absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 scale-0 rounded-full bg-crimson-bright opacity-0" />
-          </button>
-        ))}
-      </nav>
-    </div>
+    <nav
+      aria-label="Primary"
+      className="fixed right-6 top-1/2 z-50 -translate-y-1/2"
+      style={{ fontFamily: "var(--font-lactos)" }}
+    >
+      <div className="flex w-[168px] flex-col gap-3">
+        {LINKS.map((l) => {
+          const on = active === l.id;
+          return (
+            <button
+              key={l.id}
+              onClick={() => go(l.id)}
+              aria-current={on ? "page" : undefined}
+              className={`${base} ${
+                on
+                  ? "border-[#f2e4e0] bg-[#e02540] text-[#180207] shadow-[4px_4px_0_0_#f2e4e0] hover:shadow-[1px_1px_0_0_#f2e4e0]"
+                  : "border-[#e02540] bg-[#120306] text-[#f2e4e0]/85 shadow-[4px_4px_0_0_#8e1220] hover:bg-[#1d0509] hover:shadow-[1px_1px_0_0_#8e1220]"
+              }`}
+            >
+              <span>{l.label}</span>
+              {/* blocky index marker — filled on the active block */}
+              <span
+                className="h-2.5 w-2.5 shrink-0 border-[2px]"
+                style={{
+                  borderColor: on ? "#180207" : "#e02540",
+                  background: on ? "#180207" : "transparent",
+                }}
+              />
+            </button>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

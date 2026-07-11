@@ -36,6 +36,7 @@ export default function Preloader({
       let taps = 0;
       let ready = false;
       let launched = false;
+      let airborne = false; // true while a bounce is in flight — blocks taps
       let activeBounce: gsap.core.Timeline | null = null;
 
       // ---------------------------------------------------------------------
@@ -50,6 +51,7 @@ export default function Preloader({
         // never let taps stack — the previous bounce is killed so overlapping
         // timelines can't fight over the orb and leave it stuck mid-air
         activeBounce?.kill();
+        airborne = true; // no more taps until it lands again — no double jumps
         const jump = Math.min(70 + i * 48, h * 0.5);
         // the charge level this bounce settles at — grows with every tap
         const chargeOpacity = Math.min(0.14 + i * 0.11, 0.64);
@@ -67,6 +69,10 @@ export default function Preloader({
           .to(".halo", { y: groundY, duration: 0.32, ease: "power2.in" }, "<")
           .to(".floor-pool", { scaleX: 1, scaleY: 1, opacity: 0.9, duration: 0.32, ease: "power2.in" }, "<")
           .to(".floor-reflection", { scaleY: 1, opacity: 0.4, duration: 0.32, ease: "power2.in" }, "<")
+          // back on the ground — taps are allowed again (even during the wobble)
+          .call(() => {
+            airborne = false;
+          })
           // impact — orb squashes, floor splashes, and the charge aura flares up
           // to its new, higher level and stays there (energy retained)
           .to(".sphere", { scaleX: 1.34, scaleY: 0.64, duration: 0.08, ease: "power2.out" })
@@ -101,6 +107,7 @@ export default function Preloader({
         safety.kill();
         gsap.to(".tap-hint", { opacity: 0, duration: 0.25, ease: "power1.out" });
         // cancel any bounce still in flight so nothing fights over the orb
+        activeBounce?.kill();
         gsap.killTweensOf([".sphere", ".halo", ".floor-pool", ".floor-reflection"]);
 
         gsap
@@ -123,13 +130,15 @@ export default function Preloader({
           .call(onReveal, undefined, 0.92)
           .to(".sphere", { opacity: 0, duration: 0.2, ease: "power1.out" }, 0.92)
           .to(".halo", { opacity: 0, duration: 0.2, ease: "power1.out" }, 0.92)
-          // …then the red clears and the matte-black scene is left standing
-          .to(".crimson-flash", { opacity: 0, duration: 0.9, ease: "power2.inOut" }, 1.35)
-          .to(container.current, { autoAlpha: 0, duration: 0.5, ease: "power1.out" }, 1.6);
+          // …then the red clears fast — we drop straight into the hero with no
+          // lingering fade between the blast and the scene beneath
+          .to(".crimson-flash", { opacity: 0, duration: 0.4, ease: "power2.in" }, 1.0)
+          .to(container.current, { autoAlpha: 0, duration: 0.28, ease: "power1.out" }, 1.08);
       }
 
       function onTap() {
-        if (!ready || launched) return;
+        // ignore taps while the orb is still in the air — one jump per landing
+        if (!ready || launched || airborne) return;
         taps += 1;
         ripple();
         safety.restart(true);
@@ -219,7 +228,6 @@ export default function Preloader({
             style={{
               width: 96,
               height: 128,
-              mixBlendMode: "screen",
               willChange: "transform, opacity",
               background:
                 "radial-gradient(50% 42% at 50% 30%, rgba(255,205,185,0.5) 0%, rgba(224,37,64,0.26) 38%, transparent 70%)",
@@ -233,7 +241,6 @@ export default function Preloader({
             style={{
               width: 320,
               height: 96,
-              mixBlendMode: "screen",
               willChange: "transform, opacity",
               background:
                 "radial-gradient(50% 50% at 50% 50%, rgba(255,240,235,0.9) 0%, rgba(255,120,80,0.55) 22%, rgba(224,37,64,0.38) 42%, rgba(142,18,32,0.16) 62%, transparent 78%)",
@@ -272,7 +279,6 @@ export default function Preloader({
               width: 300,
               height: 82,
               filter: "blur(5px)",
-              mixBlendMode: "screen",
               background:
                 "radial-gradient(58% 50% at 50% 50%, rgba(255,244,240,0.95) 0%, rgba(255,120,80,0.7) 26%, rgba(224,37,64,0.5) 46%, rgba(142,18,32,0.2) 64%, transparent 80%)",
             }}

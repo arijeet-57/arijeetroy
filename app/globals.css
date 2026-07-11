@@ -3,19 +3,14 @@
 /* ---------- Custom fonts (drop font files into /public/fonts/...) ---------- */
 @font-face {
   font-family: "Lingkawi";
-  src: url("/fonts/lingkawi/lingkawi.woff2") format("woff2"),
-    url("/fonts/lingkawi/lingkawi.woff") format("woff"),
-    url("/fonts/lingkawi/lingkawi.ttf") format("truetype"),
+  src: url("/fonts/lingkawi/lingkawi.ttf") format("truetype"),
     url("/fonts/lingkawi/lingkawi.otf") format("opentype");
   font-display: swap;
 }
 
 @font-face {
   font-family: "DX Lactos";
-  src: url("/fonts/dx-lactos/dx-lactos.woff2") format("woff2"),
-    url("/fonts/dx-lactos/dx-lactos.woff") format("woff"),
-    url("/fonts/dx-lactos/dx-lactos.ttf") format("truetype"),
-    url("/fonts/dx-lactos/dx-lactos.otf") format("opentype");
+  src: url("/fonts/dx-lactos/dx-lactos.otf") format("opentype");
   font-display: swap;
 }
 
@@ -44,12 +39,37 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  /* smaller / body copy → Lingkawi */
+  font-family: var(--font-lingkawi);
   overflow-x: hidden;
+}
+
+/* headings & large display text → Lactos. Add `font-display` to any large
+   non-heading element (hero lines, big numbers) to opt it into Lactos too. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-display {
+  font-family: var(--font-lactos);
 }
 
 ::selection {
   background: var(--crimson);
   color: #fff;
+}
+
+/* hide the native scrollbar everywhere (scrolling still works — Lenis drives
+   it). The universal rule covers whatever element actually scrolls. */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge/IE */
+}
+*::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important; /* Chrome / Safari / Edge */
 }
 
