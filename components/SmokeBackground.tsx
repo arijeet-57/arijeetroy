@@ -104,20 +104,20 @@ export default function SmokeBackground() {
         // very gentle vignette so brightness stays even across the field
         float vig = smoothstep(1.8, 0.25, length(p));
 
-        // colour: dark-red haze fills the field -> deeper red -> bright red,
-        // with a hot glow piling up where the fog gathers at the cursor
+        // colour: ghostly white haze fills the field -> brighter white -> pure white,
+        // with a hot glow piling up where the fog gathers at the cursor (x-ray aesthetic)
         vec3 col = vec3(0.0);
-        col = mix(col, vec3(0.09, 0.007, 0.014), smoothstep(0.0, 0.4, density));
-        col = mix(col, vec3(0.32, 0.024, 0.055), smoothstep(0.38, 0.76, density));
-        col = mix(col, vec3(0.50, 0.055, 0.11), smoothstep(0.78, 1.0, density));
+        col = mix(col, vec3(0.1, 0.1, 0.12), smoothstep(0.0, 0.4, density));
+        col = mix(col, vec3(0.35, 0.35, 0.4), smoothstep(0.38, 0.76, density));
+        col = mix(col, vec3(0.65, 0.65, 0.7), smoothstep(0.78, 1.0, density));
         col *= mix(0.7, 1.0, vig) * 1.638; // +40% then +17% glow
 
         gl_FragColor = vec4(col, 1.0);
       }
     `;
 
-    // clear to the dark-red fallback up front so nothing can flash white
-    gl.clearColor(0.11, 0.01, 0.02, 1.0);
+    // clear to dark grey/black fallback up front so nothing can flash white
+    gl.clearColor(0.02, 0.02, 0.02, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     const compile = (type: number, src: string) => {
@@ -211,7 +211,7 @@ export default function SmokeBackground() {
       style={{
         // fallback shown if WebGL/the shader fails (canvas is transparent then)
         background:
-          "radial-gradient(120% 100% at 50% 45%, #4a0a12 0%, #1c0206 55%, #070000 100%)",
+          "radial-gradient(120% 100% at 50% 45%, #1a1a1a 0%, #0a0a0a 55%, #000000 100%)",
       }}
     />
   );

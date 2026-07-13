@@ -170,8 +170,8 @@ export default function Hero({ active }: { active: boolean }) {
 
       <h1
         aria-label={HEADLINE}
-        className="hero-title relative z-10 select-none text-center text-[clamp(2.5rem,9vw,8rem)] leading-none tracking-tight text-foreground"
-        style={{ fontFamily: "var(--font-lingkawi)" }}
+        className="hero-title pointer-events-none relative z-10 select-none text-center text-[clamp(2.5rem,9vw,8rem)] leading-none tracking-tight text-foreground"
+        style={{ fontFamily: "var(--font-body)" }}
       >
         {words.map((word, wi) => (
           <span key={wi} aria-hidden className="inline-block whitespace-nowrap">
@@ -186,8 +186,8 @@ export default function Hero({ active }: { active: boolean }) {
       </h1>
 
       <p
-        className="subline relative z-10 mt-6 select-none text-center text-[clamp(0.8rem,1.6vw,1.1rem)] uppercase tracking-[0.45em] text-foreground/55 opacity-0"
-        style={{ fontFamily: "var(--font-lactos)" }}
+        className="subline pointer-events-none relative z-10 mt-6 select-none text-center text-[clamp(0.8rem,1.6vw,1.1rem)] uppercase tracking-[0.45em] text-foreground/55 opacity-0"
+        style={{ fontFamily: "var(--font-display)" }}
       >
         {SUBLINE}
       </p>
@@ -195,7 +195,7 @@ export default function Hero({ active }: { active: boolean }) {
       <div className="scroll-cue absolute bottom-10 z-10 flex flex-col items-center gap-3 opacity-0">
         <span
           className="text-[0.65rem] uppercase tracking-[0.35em] text-foreground/50"
-          style={{ fontFamily: "var(--font-lactos)" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           scroll to continue
         </span>

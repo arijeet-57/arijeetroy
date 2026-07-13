@@ -208,7 +208,7 @@ export default function Preloader({
   return (
     <div
       ref={container}
-      className="fixed inset-0 z-[100] cursor-pointer overflow-hidden bg-[#080000]"
+      className="fixed inset-0 z-[100] cursor-pointer overflow-hidden bg-black"
     >
       {/* the blast flash — a white-hot core bleeding into crimson then dark,
           mirroring the reference orb; revealed at the moment of impact */}
@@ -216,7 +216,7 @@ export default function Preloader({
         className="crimson-flash absolute inset-0 z-10 opacity-0"
         style={{
           background:
-            "radial-gradient(circle at 50% 50%, #fff6f4 0%, #e02540 22%, #8e1220 46%, #2a0509 78%, #0a0203 100%)",
+            "radial-gradient(circle at 50% 50%, #ffffff 0%, #dcdcdc 22%, #a0a0a0 46%, #333333 78%, #000000 100%)",
         }}
       />
 
@@ -230,7 +230,7 @@ export default function Preloader({
               height: 128,
               willChange: "transform, opacity",
               background:
-                "radial-gradient(50% 42% at 50% 30%, rgba(255,205,185,0.5) 0%, rgba(224,37,64,0.26) 38%, transparent 70%)",
+                "radial-gradient(50% 42% at 50% 30%, rgba(255,255,255,0.5) 0%, rgba(200,255,255,0.2) 38%, transparent 70%)",
             }}
           />
 
@@ -243,7 +243,7 @@ export default function Preloader({
               height: 96,
               willChange: "transform, opacity",
               background:
-                "radial-gradient(50% 50% at 50% 50%, rgba(255,240,235,0.9) 0%, rgba(255,120,80,0.55) 22%, rgba(224,37,64,0.38) 42%, rgba(142,18,32,0.16) 62%, transparent 78%)",
+                "radial-gradient(50% 50% at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(220,220,220,0.55) 22%, rgba(180,180,180,0.38) 42%, rgba(100,100,100,0.16) 62%, transparent 78%)",
             }}
           />
 
@@ -256,7 +256,7 @@ export default function Preloader({
               height: 520,
               willChange: "transform, opacity",
               background:
-                "radial-gradient(circle, rgba(224,37,64,0.72) 0%, rgba(142,18,32,0.55) 24%, rgba(142,18,32,0.2) 46%, rgba(142,18,32,0) 68%)",
+                "radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(200,200,200,0.4) 24%, rgba(150,150,150,0.15) 46%, rgba(100,100,100,0) 68%)",
             }}
           />
 
@@ -266,7 +266,7 @@ export default function Preloader({
             style={{
               width: 132,
               height: 132,
-              border: "1.5px solid rgba(255,185,155,0.7)",
+              border: "1px solid rgba(255,255,255,0.7)",
             }}
           />
 
@@ -280,7 +280,7 @@ export default function Preloader({
               height: 82,
               filter: "blur(5px)",
               background:
-                "radial-gradient(58% 50% at 50% 50%, rgba(255,244,240,0.95) 0%, rgba(255,120,80,0.7) 26%, rgba(224,37,64,0.5) 46%, rgba(142,18,32,0.2) 64%, transparent 80%)",
+                "radial-gradient(58% 50% at 50% 50%, rgba(255,255,255,0.95) 0%, rgba(220,220,220,0.7) 26%, rgba(180,180,180,0.5) 46%, rgba(100,100,100,0.2) 64%, transparent 80%)",
             }}
           />
 
@@ -291,9 +291,9 @@ export default function Preloader({
             style={{
               willChange: "transform, opacity",
               background:
-                "radial-gradient(circle at 36% 30%, #ffffff 0%, #fff4f2 42%, #ffd7d1 70%, #f0b0a9 100%)",
+                "radial-gradient(circle at 36% 30%, #ffffff 0%, #eaeaea 42%, #d0d0d0 70%, #a0a0a0 100%)",
               boxShadow:
-                "0 0 28px 4px rgba(255,240,235,0.7), 0 0 90px 16px rgba(224,37,64,0.55), 0 0 180px 56px rgba(142,18,32,0.42)",
+                "0 0 28px 4px rgba(255,255,255,0.7), 0 0 90px 16px rgba(200,200,200,0.5), 0 0 180px 56px rgba(150,150,150,0.3)",
             }}
           />
         </div>
@@ -301,12 +301,12 @@ export default function Preloader({
 
       {/* the tap prompt, off on the left side of the screen */}
       <div className="pointer-events-none absolute inset-y-0 left-0 z-30 flex items-center pl-[6vw]">
-        <span
-          className="tap-hint select-none text-[0.7rem] uppercase tracking-[0.4em] text-foreground/70 opacity-0"
-          style={{ fontFamily: "var(--font-lactos)" }}
-        >
-          tap the orb
-        </span>
+          <span
+            className="tap-hint select-none text-[0.7rem] uppercase tracking-[0.4em] text-white/70 opacity-0"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            [ tap to initialize ]
+          </span>
       </div>
     </div>
   );

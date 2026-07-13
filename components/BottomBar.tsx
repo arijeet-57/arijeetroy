@@ -13,16 +13,15 @@ import { useLenis } from "lenis/react";
 
 const SECTIONS = [
   { id: "home", label: "Home" },
-  { id: "genesis", label: "Genesis" },
-  { id: "work", label: "Work" },
   { id: "about", label: "About" },
+  { id: "work", label: "Work" },
   { id: "contact", label: "Contact" },
 ];
 
 const SOCIALS = [
-  { label: "GitHub", href: "#" },
-  { label: "LinkedIn", href: "#" },
-  { label: "Email", href: "#" },
+  { label: "GitHub", href: "https://github.com" },
+  { label: "LinkedIn", href: "https://linkedin.com" },
+  { label: "Email", href: "mailto:blakelabs57@gmail.com" },
 ];
 
 export default function BottomBar() {
@@ -55,18 +54,18 @@ export default function BottomBar() {
 
   // shared segment shape; each segment after the first carries the divider rule
   const seg =
-    "flex items-center px-5 py-3 text-[0.62rem] font-bold uppercase tracking-[0.3em] transition-colors duration-150";
-  const divider = "border-l-[2.5px] border-[#e02540]";
+    "flex items-center px-5 py-3 text-[0.62rem] font-bold uppercase tracking-[0.3em] transition-colors duration-300";
+  const divider = "border-l border-white/20";
 
   return (
     <nav
       aria-label="Primary"
       className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
-      style={{ fontFamily: "var(--font-lactos)" }}
+      style={{ fontFamily: "var(--font-display)" }}
     >
-      <div className="flex items-stretch border-[2.5px] border-[#e02540] bg-[#120306] shadow-[6px_6px_0_0_#8e1220]">
-        {/* brand — solid crimson end-cap */}
-        <span className="flex items-center bg-[#e02540] px-5 text-[0.62rem] font-bold uppercase tracking-[0.3em] text-[#180207]">
+      <div className="flex items-stretch border border-white/20 bg-black/40 shadow-[0_0_12px_rgba(0,0,0,0.8)] backdrop-blur-md">
+        {/* brand — subtle glow end-cap */}
+        <span className="flex items-center bg-white/5 px-5 text-[0.62rem] font-bold uppercase tracking-[0.3em] text-white">
           Arijeet&nbsp;Roy
         </span>
 
@@ -80,8 +79,8 @@ export default function BottomBar() {
               aria-current={on ? "page" : undefined}
               className={`${seg} ${divider} ${
                 on
-                  ? "bg-[#e02540] text-[#180207]"
-                  : "text-[#f2e4e0]/85 hover:bg-[#1d0509]"
+                  ? "bg-white/10 text-white shadow-[inset_0_0_12px_rgba(255,255,255,0.1)]"
+                  : "text-white/60 hover:bg-white/5 hover:text-white"
               }`}
             >
               {s.label}
@@ -96,7 +95,7 @@ export default function BottomBar() {
             href={l.href}
             target={l.href.startsWith("http") ? "_blank" : undefined}
             rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
-            className={`${seg} ${divider} text-[#f2e4e0]/60 hover:bg-[#1d0509] hover:text-[#f2e4e0]/90`}
+            className={`${seg} ${divider} text-white/50 hover:bg-white/5 hover:text-white`}
           >
             {l.label}
           </a>

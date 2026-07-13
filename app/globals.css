@@ -1,33 +1,16 @@
 @import "tailwindcss";
 
-/* ---------- Custom fonts (drop font files into /public/fonts/...) ---------- */
-@font-face {
-  font-family: "Lingkawi";
-  src: url("/fonts/lingkawi/lingkawi.ttf") format("truetype"),
-    url("/fonts/lingkawi/lingkawi.otf") format("opentype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "DX Lactos";
-  src: url("/fonts/dx-lactos/dx-lactos.otf") format("opentype");
-  font-display: swap;
-}
 
 :root {
-  --background: #1c1c1c;
-  --foreground: #eceae6;
-  --crimson: #8e1220;
-  --crimson-bright: #e02540;
+  --background: #030303;
+  --foreground: #f2f2f2;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-crimson: var(--crimson);
-  --color-crimson-bright: var(--crimson-bright);
-  --font-lingkawi: "Lingkawi", "Georgia", serif;
-  --font-lactos: "DX Lactos", var(--font-geist-mono), monospace;
+  --font-display: var(--font-space-mono);
+  --font-body: var(--font-geist-mono);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -39,13 +22,13 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  /* smaller / body copy → Lingkawi */
-  font-family: var(--font-lingkawi);
+  /* smaller / body copy → Geist Mono */
+  font-family: var(--font-body);
   overflow-x: hidden;
 }
 
-/* headings & large display text → Lactos. Add `font-display` to any large
-   non-heading element (hero lines, big numbers) to opt it into Lactos too. */
+/* headings & large display text → Space Mono. Add `font-display` to any large
+   non-heading element (hero lines, big numbers) to opt it into Space Mono too. */
 h1,
 h2,
 h3,
@@ -53,11 +36,11 @@ h4,
 h5,
 h6,
 .font-display {
-  font-family: var(--font-lactos);
+  font-family: var(--font-display);
 }
 
 ::selection {
-  background: var(--crimson);
+  background: rgba(255, 255, 255, 0.2);
   color: #fff;
 }
 

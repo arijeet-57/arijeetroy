@@ -121,7 +121,7 @@ export default function AsciiCurtain() {
             left: `${g.left}vw`,
             top: `${g.top}vh`,
             fontSize: `${g.size}px`,
-            fontFamily: "var(--font-lactos)",
+            fontFamily: "var(--font-display)",
             opacity: 0,
           }}
         >

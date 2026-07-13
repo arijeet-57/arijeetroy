@@ -1,57 +1,55 @@
 "use client";
 
 import { useState } from "react";
+import WelcomeShader from "@/components/WelcomeShader";
 import Preloader from "@/components/Preloader";
-import SmokeBackground from "@/components/SmokeBackground";
-import HeroPortrait from "@/components/HeroPortrait";
+import HeroShaderBackground from "@/components/HeroShaderBackground";
 import HeroWordmark from "@/components/HeroWordmark";
-
-const SECTION_IDS = ["work", "about", "contact"];
+import AboutSection from "@/components/AboutSection";
+import WorkSection from "@/components/WorkSection";
+import ContactSection from "@/components/ContactSection";
 
 export default function Home() {
-  // introDone: the preloader has fully faded and can unmount. The smoke
-  // background renders underneath the whole time, so it's already there the
-  // instant the loader reveals it.
+  // entered: "click to enter" happened — the orb intro mounts underneath the
+  // welcome gate while it fades, so the click lands directly on the orb page.
+  // welcomeGone: the welcome gate has fully faded and can unmount.
+  // introDone: the preloader has fully faded and can unmount. The hero renders
+  // underneath the whole time, so it's already there the instant the loader
+  // reveals it.
+  const [entered, setEntered] = useState(false);
+  const [welcomeGone, setWelcomeGone] = useState(false);
   const [introDone, setIntroDone] = useState(false);
 
   return (
     <>
-      {!introDone && (
+      {/* the welcome gate — shader lines + "Welcome to my portfolio" */}
+      {!welcomeGone && (
+        <WelcomeShader
+          onEnter={() => setEntered(true)}
+          onComplete={() => setWelcomeGone(true)}
+        />
+      )}
+
+      {/* the orb intro — already running underneath while the gate fades out */}
+      {entered && !introDone && (
         <Preloader onReveal={() => {}} onComplete={() => setIntroDone(true)} />
       )}
 
-      {/* hero — the volumetric red fog lives only here */}
+      {/* hero — Unicorn Studio shader scene as the backdrop */}
       <section
         id="home"
         className="relative h-screen w-full overflow-hidden"
       >
-        <SmokeBackground />
+        <HeroShaderBackground />
 
-        {/* rim-lit portrait on the left — dark until you sweep the flashlight */}
-        <HeroPortrait />
-
-        {/* big "arro" wordmark (right) + brutalist scroll cue */}
+        {/* intro bio — name, role, status */}
         <HeroWordmark />
       </section>
 
-      {/* the rest of the page (no fog) — dark, roomy sections; neo-brutalist
-          label blocks so they match the rest of the site's language */}
-      {SECTION_IDS.map((id) => (
-        <section
-          key={id}
-          id={id}
-          className="relative flex h-screen w-full items-center justify-center bg-[#080000]"
-        >
-          <div className="border-[2.5px] border-[#e02540] bg-[#120306] px-8 py-4 shadow-[6px_6px_0_0_#8e1220]">
-            <span
-              className="select-none text-[0.8rem] font-bold uppercase tracking-[0.4em] text-[#f2e4e0]/90"
-              style={{ fontFamily: "var(--font-lactos)" }}
-            >
-              {id}
-            </span>
-          </div>
-        </section>
-      ))}
+      {/* the rest of the page — dark, roomy, cinematic */}
+      <AboutSection />
+      <WorkSection />
+      <ContactSection />
     </>
   );
 }

@@ -44,15 +44,15 @@ export default function Navbar() {
     else document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // shared brutalist button shape; hover presses the block into its shadow
+  // shared scanner button shape; hover presses the block down slightly
   const base =
-    "flex w-full items-center justify-between gap-4 border-[2.5px] px-4 py-2.5 text-[0.62rem] font-bold uppercase tracking-[0.3em] transition-all duration-150 hover:translate-x-[3px] hover:translate-y-[3px]";
+    "flex w-full items-center justify-between gap-4 border px-4 py-2.5 text-[0.62rem] font-bold uppercase tracking-[0.3em] transition-all duration-300 hover:translate-x-[2px] hover:translate-y-[2px]";
 
   return (
     <nav
       aria-label="Primary"
       className="fixed right-6 top-1/2 z-50 -translate-y-1/2"
-      style={{ fontFamily: "var(--font-lactos)" }}
+      style={{ fontFamily: "var(--font-display)" }}
     >
       <div className="flex w-[168px] flex-col gap-3">
         {LINKS.map((l) => {
@@ -64,17 +64,17 @@ export default function Navbar() {
               aria-current={on ? "page" : undefined}
               className={`${base} ${
                 on
-                  ? "border-[#f2e4e0] bg-[#e02540] text-[#180207] shadow-[4px_4px_0_0_#f2e4e0] hover:shadow-[1px_1px_0_0_#f2e4e0]"
-                  : "border-[#e02540] bg-[#120306] text-[#f2e4e0]/85 shadow-[4px_4px_0_0_#8e1220] hover:bg-[#1d0509] hover:shadow-[1px_1px_0_0_#8e1220]"
+                  ? "border-white/60 bg-white/10 text-white shadow-[0_0_8px_rgba(255,255,255,0.2)] backdrop-blur-md"
+                  : "border-white/20 bg-black/40 text-white/60 shadow-[0_0_8px_rgba(0,0,0,0.5)] backdrop-blur-md hover:border-white/40 hover:bg-white/5 hover:text-white"
               }`}
             >
               <span>{l.label}</span>
               {/* blocky index marker — filled on the active block */}
               <span
-                className="h-2.5 w-2.5 shrink-0 border-[2px]"
+                className="h-2.5 w-2.5 shrink-0 border-[1px]"
                 style={{
-                  borderColor: on ? "#180207" : "#e02540",
-                  background: on ? "#180207" : "transparent",
+                  borderColor: on ? "white" : "rgba(255,255,255,0.4)",
+                  background: on ? "white" : "transparent",
                 }}
               />
             </button>
